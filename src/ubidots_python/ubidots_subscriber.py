@@ -1,0 +1,80 @@
+'''
+Sends data to Ubidots using MQTT
+Example provided by Jose Garcia @Ubidots Developer
+'''
+
+import paho.mqtt.client as mqttClient
+import time
+import json
+import random
+
+'''
+global variables
+'''
+connected = False  # Stores the connection status
+BROKER_ENDPOINT = "industrial.api.ubidots.com"
+TLS_PORT = 1883  # MQTT port
+MQTT_USERNAME = ""  # Put here your Ubidots TOKEN
+MQTT_PASSWORD = ""  # Leave this in blank
+TOPIC = "/v1.6/devices/"
+DEVICE_LABEL = "mentor_ham/temperature" #Change this to your device label
+
+'''
+Functions to process incoming and outgoing streaming
+'''
+
+def on_connect(client, userdata, flags, rc):
+    global connected  # Use global variable
+    if rc == 0:
+
+        print("[INFO] Connected to broker")
+        connected = True  # Signal connection
+    else:
+        print("[INFO] Error, connection failed")
+
+
+def connect(mqtt_client, mqtt_username, mqtt_password, broker_endpoint, port):
+    global connected
+
+    if not connected:
+        mqtt_client.username_pw_set(mqtt_username, password=mqtt_password)
+        mqtt_client.on_connect = on_connect
+        mqtt_client.connect(broker_endpoint, port=port)
+        # mqtt_client.loop_start()
+        topic = "{}{}".format(TOPIC, DEVICE_LABEL)
+        mqtt_client.subscribe(topic)
+        mqtt_client.on_message = on_message
+
+        attempts = 0
+
+        while not connected and attempts < 5:  # Wait for connection
+            print(connected)
+            print("Attempting to connect...")
+            time.sleep(1)
+            attempts += 1
+
+    if not connected:
+        print("[ERROR] Could not connect to broker")
+        return False
+
+    return True
+
+
+def publish(mqtt_client, topic, payload):
+
+    try:
+        mqtt_client.publish(topic, payload)
+
+    except Exception as e:
+        print("[ERROR] Could not publish data, error: {}".format(e))
+
+
+def on_message(client, userdata, message):
+    print("received message: " ,str(message.payload.decode("utf-8")))
+
+
+if __name__ == '__main__':
+    mqtt_client = mqttClient.Client()
+    while True:
+        connect(mqtt_client, MQTT_USERNAME,MQTT_PASSWORD, BROKER_ENDPOINT, TLS_PORT)
+        mqtt_client.loop_forever()
