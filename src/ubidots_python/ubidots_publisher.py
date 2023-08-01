@@ -1,45 +1,94 @@
-# To publish the MQTT Message
+'''
+Sends data to Ubidots using MQTT
+Example provided by Jose Garcia @Ubidots Developer, modified a little bit by HAM
+'''
 
-import paho.mqtt.client as mqtt
-# from paho import mqtt
-from time import sleep
+import paho.mqtt.client as mqttClient
+import time
+import json
 import random
 
-# define static variable
-# broker = "localhost" # for local connection
-# broker = "things.ubidots.com"  # for online version
-broker = "industrial.api.ubidots.com"  # for online version
-# broker = "broker.emqx.io"  # for online version
-port = 1883
-timeout = 60
+'''
+global variables
+'''
+connected = False  # Stores the connection status
+BROKER_ENDPOINT = "industrial.api.ubidots.com"
+TLS_PORT = 1883  # MQTT port
+MQTT_USERNAME = ""  # Put here your Ubidots TOKEN
+MQTT_PASSWORD = ""  # Leave this in blank
+TOPIC = "/v1.6/devices/"
+DEVICE_LABEL = "mentor_ham/temperature" #Change this to your device label
 
-username = ''
-password = ''
-topic = "/v1.6/devices/mentor_ham/temperature"
+'''
+Functions to process incoming and outgoing streaming
+'''
+
+def on_connect(client, userdata, flags, rc):
+    global connected  # Use global variable
+    if rc == 0:
+
+        print("[INFO] Connected to broker")
+        connected = True  # Signal connection
+    else:
+        print("[INFO] Error, connection failed")
 
 
-def connect_mqtt() -> mqtt:
-    def on_connect(client, userdata, flags, rc):
-        if rc == 0:
-            print("Connected to MQTT Broker!")
-        else:
-            print("Failed to connect, return code %d\n", rc)
+def on_publish(client, userdata, result):
+    print("Published!")
 
-    client = mqtt.Client()
-    client.username_pw_set(username, password)
-    client.on_connect = on_connect
-    client.connect(broker, port)
-    return client
 
-client = connect_mqtt()
-client.loop_start()
-count = 0
-#ingin forever loop
-# while True:
-while count < 5:
-	temp = int(random.random()*100)
-	send_message = str({"value":temp})
-	client.publish(topic,payload=send_message,qos=0, retain=False)
-	print("send message "+send_message)
-	sleep(1)
-	count = count + 1
+def connect(mqtt_client, mqtt_username, mqtt_password, broker_endpoint, port):
+    global connected
+
+    if not connected:
+        mqtt_client.username_pw_set(mqtt_username, password=mqtt_password)
+        mqtt_client.on_connect = on_connect
+        mqtt_client.on_publish = on_publish
+        mqtt_client.connect(broker_endpoint, port=port)
+        mqtt_client.loop_start()
+
+        attempts = 0
+
+        while not connected and attempts < 5:  # Wait for connection
+            print(connected)
+            print("Attempting to connect...")
+            time.sleep(1)
+            attempts += 1
+
+    if not connected:
+        print("[ERROR] Could not connect to broker")
+        return False
+
+    return True
+
+
+def publish(mqtt_client, topic, payload):
+
+    try:
+        mqtt_client.publish(topic, payload)
+
+    except Exception as e:
+        print("[ERROR] Could not publish data, error: {}".format(e))
+
+
+def main(mqtt_client):
+    # create random value (0-100)
+    val = int(random.random()*100)
+
+    payload = json.dumps({"value": val})
+    topic = "{}{}".format(TOPIC, DEVICE_LABEL)
+    
+    if not connect(mqtt_client, MQTT_USERNAME,
+                   MQTT_PASSWORD, BROKER_ENDPOINT, TLS_PORT):
+        return False
+
+    publish(mqtt_client, topic, payload)
+
+    return True
+
+
+if __name__ == '__main__':
+    mqtt_client = mqttClient.Client()
+    while True:
+        main(mqtt_client)
+        time.sleep(10)
