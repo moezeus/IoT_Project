@@ -45,7 +45,7 @@ def on_message(client, userdata, msg):
         print("Lampu dimatikan")
         # Do something else
 
-    elif payload_decoded == "sens"
+    elif payload_decoded == "sens":
         print("read sensor value")
         # Do something else
         
