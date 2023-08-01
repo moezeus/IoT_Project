@@ -13,7 +13,7 @@ broker = "industrial.api.ubidots.com"  # for online version
 port = 1883
 timeout = 60
 
-username = 'BBFF-NDkvRg3WNX0bRRk9YW21MEYz61U8Lu'
+username = ''
 password = ''
 topic = "/v1.6/devices/mentor_ham/temperature"
 
