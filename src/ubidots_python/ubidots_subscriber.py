@@ -14,10 +14,10 @@ global variables
 connected = False  # Stores the connection status
 BROKER_ENDPOINT = "industrial.api.ubidots.com"
 TLS_PORT = 1883  # MQTT port
-MQTT_USERNAME = ""  # Put here your Ubidots TOKEN
+MQTT_USERNAME = "BBFF-NDkvRg3WNX0bRRk9YW21MEYz61U8Lu"  # Put here your Ubidots TOKEN
 MQTT_PASSWORD = ""  # Leave this in blank
 TOPIC = "/v1.6/devices/"
-DEVICE_LABEL = "mentor_ham/temperature" #Change this to your device label
+DEVICE_LABEL = "mentor_ham/#" #Change this to your device label
 
 '''
 Functions to process incoming and outgoing streaming
@@ -44,6 +44,7 @@ def connect(mqtt_client, mqtt_username, mqtt_password, broker_endpoint, port):
         topic = "{}{}".format(TOPIC, DEVICE_LABEL)
         mqtt_client.subscribe(topic)
         mqtt_client.on_message = on_message
+        mqtt_client.loop_forever()
 
         attempts = 0
 
@@ -70,11 +71,12 @@ def publish(mqtt_client, topic, payload):
 
 
 def on_message(client, userdata, message):
-    print("received message: " ,str(message.payload.decode("utf-8")))
-
+    if message.topic == "/v1.6/devices/mentor_ham/temperature":
+        print("new temperature data: " ,str(message.payload.decode("utf-8")))
+    elif message.topic == "/v1.6/devices/mentor_ham/lampu_1":
+        print("Lamp State: " ,str(message.payload.decode("utf-8")))
 
 if __name__ == '__main__':
     mqtt_client = mqttClient.Client()
     while True:
         connect(mqtt_client, MQTT_USERNAME,MQTT_PASSWORD, BROKER_ENDPOINT, TLS_PORT)
-        mqtt_client.loop_forever()

@@ -14,10 +14,10 @@ global variables
 connected = False  # Stores the connection status
 BROKER_ENDPOINT = "industrial.api.ubidots.com"
 TLS_PORT = 1883  # MQTT port
-MQTT_USERNAME = ""  # Put here your Ubidots TOKEN
+MQTT_USERNAME = "BBFF-NDkvRg3WNX0bRRk9YW21MEYz61U8Lu"  # Put here your Ubidots TOKEN
 MQTT_PASSWORD = ""  # Leave this in blank
 TOPIC = "/v1.6/devices/"
-DEVICE_LABEL = "mentor_ham/temperature" #Change this to your device label
+DEVICE_LABEL = "mentor_ham" #Change this to your device label
 
 '''
 Functions to process incoming and outgoing streaming
@@ -74,8 +74,9 @@ def publish(mqtt_client, topic, payload):
 def main(mqtt_client):
     # create random value (0-100)
     val = int(random.random()*100)
+    device_status = 1
 
-    payload = json.dumps({"value": val})
+    payload = json.dumps({"temperature": val, "device-status": device_status})
     topic = "{}{}".format(TOPIC, DEVICE_LABEL)
     
     if not connect(mqtt_client, MQTT_USERNAME,
