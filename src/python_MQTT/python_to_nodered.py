@@ -33,7 +33,7 @@ count = 0
 #ingin forever loop
 # while True:
 while count < 5:
-	data = int(random.random()*100)
+	data = int(random.random()*10)
 	ret = client1.publish(topic,payload=data,qos=1)
 	print("data sent")
 	sleep(1)
