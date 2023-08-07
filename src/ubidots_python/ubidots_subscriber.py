@@ -17,7 +17,7 @@ TLS_PORT = 1883  # MQTT port
 MQTT_USERNAME = "BBFF-NDkvRg3WNX0bRRk9YW21MEYz61U8Lu"  # Put here your Ubidots TOKEN
 MQTT_PASSWORD = ""  # Leave this in blank
 TOPIC = "/v1.6/devices/"
-DEVICE_LABEL = "mentor_ham/#" #Change this to your device label
+DEVICE_LABEL = "(label)/#" #Change this to your device label
 
 '''
 Functions to process incoming and outgoing streaming
@@ -26,7 +26,6 @@ Functions to process incoming and outgoing streaming
 def on_connect(client, userdata, flags, rc):
     global connected  # Use global variable
     if rc == 0:
-
         print("[INFO] Connected to broker")
         connected = True  # Signal connection
     else:
@@ -40,7 +39,6 @@ def connect(mqtt_client, mqtt_username, mqtt_password, broker_endpoint, port):
         mqtt_client.username_pw_set(mqtt_username, password=mqtt_password)
         mqtt_client.on_connect = on_connect
         mqtt_client.connect(broker_endpoint, port=port)
-        # mqtt_client.loop_start()
         topic = "{}{}".format(TOPIC, DEVICE_LABEL)
         mqtt_client.subscribe(topic)
         mqtt_client.on_message = on_message
@@ -59,16 +57,6 @@ def connect(mqtt_client, mqtt_username, mqtt_password, broker_endpoint, port):
         return False
 
     return True
-
-
-def publish(mqtt_client, topic, payload):
-
-    try:
-        mqtt_client.publish(topic, payload)
-
-    except Exception as e:
-        print("[ERROR] Could not publish data, error: {}".format(e))
-
 
 def on_message(client, userdata, message):
     if message.topic == "/v1.6/devices/mentor_ham/temperature":
