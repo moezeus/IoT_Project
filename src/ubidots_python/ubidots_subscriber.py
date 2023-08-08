@@ -59,10 +59,12 @@ def connect(mqtt_client, mqtt_username, mqtt_password, broker_endpoint, port):
     return True
 
 def on_message(client, userdata, message):
-    if message.topic == "/v1.6/devices/mentor_ham/temperature":
-        print("new temperature data: " ,str(message.payload.decode("utf-8")))
-    elif message.topic == "/v1.6/devices/mentor_ham/lampu_1":
-        print("Lamp State: " ,str(message.payload.decode("utf-8")))
+    print("incoming data: " ,str(message.payload.decode("utf-8")))
+
+    # if message.topic == "/v1.6/devices/mentor_ham/temperature":
+    #     print("new temperature data: " ,str(message.payload.decode("utf-8")))
+    # elif message.topic == "/v1.6/devices/mentor_ham/lampu_1":
+    #     print("Lamp State: " ,str(message.payload.decode("utf-8")))
 
 if __name__ == '__main__':
     mqtt_client = mqttClient.Client()
