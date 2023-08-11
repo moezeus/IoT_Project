@@ -14,7 +14,7 @@ global variables
 connected = False  # Stores the connection status
 BROKER_ENDPOINT = "industrial.api.ubidots.com"
 TLS_PORT = 1883  # MQTT port
-MQTT_USERNAME = ""  # Put here your Ubidots TOKEN
+MQTT_USERNAME = "BBFF-AbKfIHlnvFgjcijeTfZeLC9EqLcT6S"  # Put here your Ubidots TOKEN
 MQTT_PASSWORD = ""  # Leave this in blank
 TOPIC = "/v1.6/devices/"
 DEVICE_LABEL = "187_omegatron/#" #Change this to your device label
@@ -66,7 +66,7 @@ def on_message(client, userdata, message):
             print("pintu dibuka")
         else: 
             print("pintu ditutup")
-            
+
     # if message.topic == "/v1.6/devices/mentor_ham/temperature":
     #     print("new temperature data: " ,str(message.payload.decode("utf-8")))
     # elif message.topic == "/v1.6/devices/mentor_ham/lampu_1":
