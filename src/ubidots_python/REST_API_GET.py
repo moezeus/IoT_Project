@@ -26,39 +26,43 @@ def build_payload(variable_1, variable_2, variable_3):
 
     return payload
 
-
-def post_request(payload):
+def get_request():
     # Creates the headers for the HTTP requests
     url = "http://industrial.api.ubidots.com"
-    url = "{}/api/v1.6/devices/{}".format(url, DEVICE_LABEL)
-    headers = {"X-Auth-Token": TOKEN, "Content-Type": "application/json"}
+    url1 = "{}/api/v1.6/devices/{}/{}/lv".format(url, DEVICE_LABEL, VARIABLE_LABEL_1)
+    url2 = "{}/api/v1.6/devices/{}/{}/lv".format(url, DEVICE_LABEL, VARIABLE_LABEL_2)
+    url3 = "{}/api/v1.6/devices/{}/{}/lv".format(url, DEVICE_LABEL, VARIABLE_LABEL_3)
+    headers = {"X-Auth-Token": TOKEN}
 
     # Makes the HTTP requests
-    status = 400
+    status = [400,400,400]
     attempts = 0
-    while status >= 400 and attempts <= 5:
-        req = requests.post(url=url, headers=headers, json=payload)
-        status = req.status_code
+    while status[0] >= 400 and attempts <= 5:
+        req1 = requests.get(url=url1, headers=headers)
+        req2 = requests.get(url=url2, headers=headers)
+        req3 = requests.get(url=url3, headers=headers)
+        status = [req1.status_code,req2.status_code,req3.status_code]
         attempts += 1
         time.sleep(1)
 
     # Processes results
-    print(req.status_code, req.json())
-    if status >= 400:
-        print("[ERROR] Could not send data after 5 attempts, please check \
+    print(status)
+    print(req1.json(),req2.json(),req3.json())
+    if status[0] >= 400:
+        print("[ERROR] Could not get data after 5 attempts, please check \
             your token credentials and internet connection")
         return False
 
     print("[INFO] request made properly, your device is updated")
     return True
 
-
 def main():
     payload = build_payload(
         VARIABLE_LABEL_1, VARIABLE_LABEL_2, VARIABLE_LABEL_3)
 
-    print("[INFO] Attemping to send data")
-    post_request(payload)
+    print("[INFO] Attemping to get data")
+    # post_request(payload)
+    get_request()
     print("[INFO] finished")
 
 
