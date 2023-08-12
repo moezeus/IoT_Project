@@ -3,8 +3,8 @@ import requests
 import math
 import random
 
-TOKEN = "BBFF-NDkvRg3WNX0bRRk9YW21MEYz61U8Lu"  # Put your TOKEN here
-DEVICE_LABEL = "mentor_ham"  # Put your device label here 
+TOKEN = "..."  # Put your TOKEN here
+DEVICE_LABEL = "..."  # Put your device label here 
 VARIABLE_LABEL_1 = "temperature"  # Put your first variable label here
 VARIABLE_LABEL_2 = "humidity"  # Put your second variable label here
 VARIABLE_LABEL_3 = "position"  # Put your second variable label here
